@@ -47,16 +47,12 @@ export default function MyNavbar({ currentUser, activeTab, setActiveTab, isChatO
   return (
     <nav className="bg-bg-panel min-h-[75px] border-b border-border-color shadow-lg sticky top-0 z-50 px-4 md:px-8 py-2 md:py-0 flex items-center">
       <div className="w-full flex justify-between items-center">
-        
-        {/* Left Side: Brand Logo and Horizontal Navigation Menu (Desktop Only) */}
-        <div className="flex items-center gap-6">
+            <div className="flex items-center gap-6">
           <div className="flex items-center gap-2 cursor-default select-none">
             <span className="font-display font-black text-white text-base md:text-lg tracking-widest uppercase flex items-center gap-1.5">
               💎 PS99 <span className="text-cyan-400">Core</span>
             </span>
           </div>
-
-          {/* Desktop Navigation Link Tabs */}
           <div className="hidden md:flex bg-bg-input border border-border-color rounded-xl p-1 gap-1">
             {menuItems.map((item) => (
               <button
@@ -74,10 +70,8 @@ export default function MyNavbar({ currentUser, activeTab, setActiveTab, isChatO
           </div>
         </div>
 
-        {/* Right Side: Auth status & Burger toggles for smaller resolutions */}
         <div className="flex items-center gap-3">
           
-          {/* Real-time liquid gems indicator balance tag */}
           <div className="relative group">
             <div 
               onClick={() => setIsTooltipOpen(!isTooltipOpen)}
@@ -91,7 +85,6 @@ export default function MyNavbar({ currentUser, activeTab, setActiveTab, isChatO
               </span>
             </div>
 
-            {/* Micro details drop info popup */}
             {isTooltipOpen && (
               <div className="absolute top-full mt-3 right-0 w-[220px] bg-bg-panel border border-cyan-500/35 rounded-lg p-3.5 shadow-2xl z-50 text-xs animate-in fade-in slide-in-from-top-1">
                 <div className="absolute top-[-6px] right-8 w-3 h-3 bg-bg-panel border-l border-t border-cyan-500/35 rotate-45" />
@@ -122,7 +115,6 @@ export default function MyNavbar({ currentUser, activeTab, setActiveTab, isChatO
             )}
           </div>
 
-          {/* Chat Panel Trigger button */}
           <button
             onClick={() => setIsChatOpen(!isChatOpen)}
             className={`px-3 py-2 border rounded-xl text-xs font-semibold hover:border-cyan-400 hover:bg-cyan-500/5 transition-all cursor-pointer flex items-center gap-1.5 ${
@@ -135,7 +127,6 @@ export default function MyNavbar({ currentUser, activeTab, setActiveTab, isChatO
             <span className="hidden sm:inline">Radio Chat</span>
           </button>
 
-          {/* Quick Logout (Desktop Only) */}
           <button
             onClick={logout}
             className="hidden md:flex border border-rose-500/20 hover:border-rose-500 hover:bg-rose-500/10 text-rose-500 px-3 py-2 rounded-xl text-xs font-bold font-display uppercase tracking-widest cursor-pointer items-center gap-1 transition-all"
@@ -144,7 +135,6 @@ export default function MyNavbar({ currentUser, activeTab, setActiveTab, isChatO
             <LogOut className="h-3.5 w-3.5" />
           </button>
 
-          {/* 🍔 Responsive BURGER Toggle Trigger Icon Button (Mobile Only) */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="block md:hidden text-white hover:text-cyan-400 focus:outline-none p-1.5 border border-border-color bg-bg-card/40 rounded-lg cursor-pointer transition-all"
@@ -159,12 +149,10 @@ export default function MyNavbar({ currentUser, activeTab, setActiveTab, isChatO
         </div>
       </div>
 
-      {/* 🍔 Mobile Collapsible Navigation Overlay (Renders on Mobile Only when burger button is active) */}
       {isMobileMenuOpen && (
         <div className="absolute top-[75px] left-0 right-0 bg-bg-panel border-b border-border-color shadow-2xl z-50 p-4 block md:hidden animate-in slide-in-from-top-3 duration-300">
           <div className="flex flex-col gap-2">
             
-            {/* Nav Links in mobile menu */}
             {menuItems.map((item) => (
               <button
                 key={item.id}
@@ -179,7 +167,6 @@ export default function MyNavbar({ currentUser, activeTab, setActiveTab, isChatO
               </button>
             ))}
 
-            {/* Operational User Badge info inside mobile view */}
             <div className="mt-2.5 p-3 bg-bg-input border border-border-color/80 rounded-lg flex justify-between items-center">
               <div>
                 <span className="text-[10px] text-slate-500 uppercase font-black block mb-0.5">Logged In As</span>
@@ -190,7 +177,6 @@ export default function MyNavbar({ currentUser, activeTab, setActiveTab, isChatO
               </span>
             </div>
 
-            {/* Quick action triggers inside Mobile Burger View */}
             <button
               onClick={logout}
               className="mt-1 w-full border border-rose-500/20 hover:border-rose-500 hover:bg-rose-500/10 text-rose-500 py-3 rounded-lg text-xs font-bold font-display uppercase tracking-widest text-center cursor-pointer flex justify-center items-center gap-2 transition-all"
