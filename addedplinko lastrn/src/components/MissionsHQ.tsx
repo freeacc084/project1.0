@@ -39,22 +39,15 @@ export default function MissionsHQ({
   const [claimingId, setClaimingId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ isSuccess: boolean; msg: string | null }>({ isSuccess: true, msg: null });
 
-  // Safe checks for fresh data from Firebase
   const freshUser = dbUsers[currentUser.username] || currentUser;
 
-  // Level & XP Formula 
-  // Let's define: 1 Level = 50,000,000 gems wagered or comparable gameplay stats.
-  // We can track the user's progress through totalWager!
   const totalWager = Number(freshUser.totalWager) || 0;
   
-  // Calculate Level dynamically based on wagered volume (keeps it fully synced with high stakes games)
-  // Level = Math.floor(Math.sqrt(totalWager / 5_000_000)) + 1
+
   const calculateLevelDetails = (wagerAmount: number) => {
-    // Elegant progression math
     const baseVal = 5_000_000;
     const computedLevel = Math.floor(Math.sqrt(wagerAmount / baseVal)) + 1;
     
-    // Formula for current level XP boundary and next level XP boundary
     const levelStartWager = Math.pow(computedLevel - 1, 2) * baseVal;
     const levelNextWager = Math.pow(computedLevel, 2) * baseVal;
     const progressCurrent = wagerAmount - levelStartWager;
@@ -95,14 +88,12 @@ export default function MissionsHQ({
 
   const lvl = calculateLevelDetails(totalWager);
 
-  // Statistics
   const totalMinesRound = Number((freshUser as any).minesRoundCount) || 0;
   const totalSpinRound = Number((freshUser as any).spinRoundCount) || 0;
   const totalTowersRound = Number((freshUser as any).towersRoundCount) || 0;
   const completedMissions = (freshUser as any).completedMissions || {};
   const claimedMilestones = (freshUser as any).claimedMilestones || {};
 
-  // Core Game Attached Challenges Configuration
   const missionsList = [
     {
       id: "m_mines_rookie",
@@ -152,7 +143,6 @@ export default function MissionsHQ({
     },
   ];
 
-  // Level milestones list
   const milestoneList = [
     { id: 2, label: "Level 2 Unlock", req: 2, reward: (milestoneRewards && milestoneRewards["lvl_2"]) ?? 35_000_000, rewardDesc: "Level 2 Diamond Pack" },
     { id: 4, label: "Level 4 Unlock", req: 4, reward: (milestoneRewards && milestoneRewards["lvl_4"]) ?? 75_000_000, rewardDesc: "Level 4 Platinum Cache" },
@@ -190,9 +180,7 @@ export default function MissionsHQ({
 
   return (
     <div className="space-y-6">
-      {/* Dynamic Profile Level Card */}
       <div className="bg-[#0b0c14] border border-border-color rounded-xl p-5 relative overflow-hidden group hover:border-[#10b981]/20 transition-all">
-        {/* Glow ambient background elements */}
         <div className="absolute top-0 right-0 w-80 h-32 bg-[#10b981]/[0.02] blur-[100px] pointer-events-none" />
         
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10">
@@ -230,7 +218,6 @@ export default function MissionsHQ({
           </div>
         </div>
 
-        {/* Customized Progress Bar */}
         <div className="mt-5 relative z-10 space-y-1.5">
           <div className="flex justify-between items-center text-[10px] text-slate-500 font-extrabold uppercase">
             <span>Level Progression XP Gauge</span>
@@ -252,7 +239,6 @@ export default function MissionsHQ({
       {/* Main Switcher Hub */}
       <div className="bg-bg-panel border border-border-color rounded-xl p-5 shadow-xl relative overflow-hidden">
         
-        {/* Alerts / Feedback Banner */}
         <AnimatePresence mode="wait">
           {feedback.msg && (
             <motion.div
@@ -305,7 +291,6 @@ export default function MissionsHQ({
           </span>
         </div>
 
-        {/* TAB 1: SEASON MISSIONS */}
         {activeTab === 'missions' && (
           <div className="space-y-4">
             <div className="bg-black/35 rounded-lg p-3.5 border border-white/5 text-[10px] text-slate-400 tracking-wide leading-relaxed font-semibold uppercase">
@@ -408,7 +393,6 @@ export default function MissionsHQ({
           </div>
         )}
 
-        {/* TAB 2: LEVEL MILESTONES */}
         {activeTab === 'milestones' && (
           <div className="space-y-4">
             <div className="bg-black/35 rounded-lg p-3.5 border border-white/5 text-[10px] text-slate-400 tracking-wide leading-relaxed font-semibold uppercase">
@@ -432,7 +416,6 @@ export default function MissionsHQ({
                     }`}
                   >
                     <div className="flex items-center gap-4">
-                      {/* Shield Icon Lock visual */}
                       <div className={`h-11 w-11 rounded-lg border flex items-end justify-center pb-1.5 shrink-0 ${
                         isClaimed 
                           ? 'border-slate-800 bg-slate-950 text-slate-500' 
