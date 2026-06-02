@@ -53,22 +53,18 @@ export default function AdminDesk({
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [amounts, setAmounts] = useState<{ [username: string]: string }>({});
   
-  // Confirmation states
   const [confirmDeleteUser, setConfirmDeleteUser] = useState<string | null>(null);
   const [confirmResetUser, setConfirmResetUser] = useState<string | null>(null);
   const [confirmResetAll, setConfirmResetAll] = useState<boolean>(false);
 
-  // Promo Code Creator states
   const [newCodeName, setNewCodeName] = useState<string>("");
   const [newCodeValue, setNewCodeValue] = useState<string>("");
 
-  // Dynamic Cosmetic price editing inputs state
   const [editedCosmeticPrices, setEditedCosmeticPrices] = useState<{ [key: string]: string }>({});
 
   const [editedMissionRewards, setEditedMissionRewards] = useState<{ [key: string]: string }>({});
   const [editedMilestoneRewards, setEditedMilestoneRewards] = useState<{ [key: string]: string }>({});
 
-  // Announcement state
   const [announcementInput, setAnnouncementInput] = useState<string>(announcement || "");
 
   React.useEffect(() => {
@@ -152,7 +148,6 @@ export default function AdminDesk({
         </div>
       </div>
 
-      {/* Admin metrics counters */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-bg-panel border border-border-color rounded-xl p-4">
           <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">
@@ -168,10 +163,8 @@ export default function AdminDesk({
         </div>
       </div>
 
-      {/* Overlord exclusive panels */}
       {isOverlord && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
-          {/* Coupon codes management console */}
           <div className="lg:col-span-4 bg-bg-panel/65 border border-purple-500/25 rounded-xl p-5 shadow-inner flex flex-col justify-between">
             <div>
               <h4 className="font-display font-black text-xs text-purple-300 uppercase tracking-widest mb-3 flex items-center gap-1.5 pb-2 border-b border-white/5">
@@ -196,7 +189,6 @@ export default function AdminDesk({
             </div>
             
             <div>
-              {/* List of active codes */}
               <div className="max-h-[100px] overflow-y-auto space-y-1.5 pr-1 border border-white/5 bg-black/25 rounded p-2 mb-3">
                 {Object.keys(promoCodes).length > 0 ? (
                   Object.entries(promoCodes).map(([code, value]) => (
@@ -235,7 +227,6 @@ export default function AdminDesk({
             </div>
           </div>
 
-          {/* Live Announcement Broadcast Console */}
           <div className="lg:col-span-4 bg-bg-panel/65 border border-cyan-500/25 rounded-xl p-5 shadow-inner flex flex-col justify-between">
             <div>
               <h4 className="font-display font-black text-xs text-cyan-300 uppercase tracking-widest mb-3 flex items-center gap-1.5 pb-2 border-b border-white/5">
@@ -276,7 +267,6 @@ export default function AdminDesk({
             </div>
           </div>
 
-          {/* Global Statistics Wipe Station */}
           <div className="lg:col-span-4 bg-bg-panel/65 border border-red-500/20 rounded-xl p-5 flex flex-col justify-between">
             <div>
               <h4 className="font-display font-black text-xs text-rose-400 uppercase tracking-widest mb-2 flex items-center gap-1.5 pb-2 border-b border-white/5">
@@ -320,7 +310,6 @@ export default function AdminDesk({
             </div>
           </div>
 
-          {/* Dynamic Cosmetic Shop Pricing Desk (Overlord Only) */}
           <div className="lg:col-span-12 bg-bg-panel/65 border border-purple-500/20 rounded-xl p-5 shadow-inner mt-2">
             <h4 className="font-display font-black text-xs text-purple-300 uppercase tracking-widest mb-3 flex items-center gap-1.5 pb-2 border-b border-white/5">
               <Palette className="h-4 w-4 text-purple-400" /> Dynamic Cosmetic Shop Pricing Desk (Overlord Only)
@@ -330,7 +319,6 @@ export default function AdminDesk({
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Premium Tags Pricing */}
               <div className="space-y-2">
                 <h5 className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest mb-2 flex items-center gap-1">
                   🏷️ Premium Badges & Chat Tags
@@ -377,7 +365,6 @@ export default function AdminDesk({
                 </div>
               </div>
 
-              {/* Premium Colors Pricing */}
               <div className="space-y-2">
                 <h5 className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest mb-2 flex items-center gap-1">
                   💡 Premium Glow Palette Colors
@@ -434,7 +421,6 @@ export default function AdminDesk({
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Mission Rewards */}
               <div className="space-y-2">
                 <h5 className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest mb-2 flex items-center gap-1">
                   🏆 Season Mission Reward Overwrites
@@ -480,7 +466,6 @@ export default function AdminDesk({
                 </div>
               </div>
 
-              {/* Milestone Level Rewards */}
               <div className="space-y-2">
                 <h5 className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest mb-2 flex items-center gap-1">
                   ✨ Milestone Vault Reward Overwrites
@@ -530,7 +515,6 @@ export default function AdminDesk({
         </div>
       )}
 
-      {/* Search and Database State */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="relative flex-1">
           <input
@@ -543,7 +527,6 @@ export default function AdminDesk({
         </div>
       </div>
 
-      {/* Database accounts list */}
       <div className="overflow-x-auto rounded-lg border border-border-color">
         <table className="w-full text-left border-collapse bg-bg-panel/40">
           <thead>
@@ -568,12 +551,10 @@ export default function AdminDesk({
                 const cashoutCount = uData.totalCashout || 0;
                 const wCount = uData.totalWager || 0;
                 
-                // Allow delete anyone except self
                 const isSelf = user === currentUser.username;
 
                 return (
                   <tr key={user} className="hover:bg-purple-950/5 transition-all">
-                    {/* User info & badge */}
                     <td className="px-5 py-4">
                       <div className="flex flex-col gap-1">
                         <span className="text-white font-display font-extrabold text-sm uppercase">
@@ -587,21 +568,18 @@ export default function AdminDesk({
                       </div>
                     </td>
 
-                    {/* Authentication password disclosure */}
                     <td className="px-5 py-4">
                       <code className="bg-bg-input px-2 py-1 text-[10px] text-slate-400 rounded border border-border-color font-mono select-all">
                         {isOverlord && rankVal !== 'overlord' && user !== "data32" ? (uData.password || "********") : "••••••••"}
                       </code>
                     </td>
 
-                    {/* Balance */}
                     <td className="px-5 py-4">
                       <span className="text-cyan-400 font-display font-extrabold block">
                         💎 {bal.toLocaleString()}
                       </span>
                     </td>
 
-                    {/* Operational performance stats */}
                     <td className="px-5 py-4 whitespace-nowrap text-[10px] text-slate-400 leading-relaxed font-display">
                       <div className="flex flex-col gap-0.5">
                         <span className="text-emerald-500">📥 Dep: {depositCount.toLocaleString()}</span>
@@ -610,7 +588,6 @@ export default function AdminDesk({
                       </div>
                     </td>
 
-                    {/* Rank picker select widget */}
                     <td className="px-5 py-4">
                       {isOverlord && user !== "data32" ? (
                         <select
@@ -636,10 +613,8 @@ export default function AdminDesk({
                       )}
                     </td>
 
-                    {/* Action buttons (ledger mods or DELETE user for Overlords) */}
                     <td className="px-5 py-4">
                       <div className="flex flex-wrap items-center gap-3">
-                        {/* Transaction input */}
                         <div className="flex items-center bg-bg-input border border-border-color rounded-lg overflow-hidden max-w-[120px]">
                           <input
                             type="text"
@@ -650,7 +625,6 @@ export default function AdminDesk({
                           />
                         </div>
 
-                        {/* Plus and minus actions */}
                         <button
                           onClick={() => handleGive(user)}
                           className="bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/30 rounded px-2.5 py-1 font-bold text-[10px] flex items-center gap-1 cursor-pointer transition-all"
@@ -674,7 +648,6 @@ export default function AdminDesk({
                           </button>
                         )}
 
-                        {/* Overlord exclusive physical Cashout statistic modifier */}
                         {isOverlord && (
                           <button
                             onClick={() => handleCashout(user)}
@@ -685,7 +658,6 @@ export default function AdminDesk({
                           </button>
                         )}
 
-                        {/* Reset individual user statistics (exclusively for OVERLORD) */}
                         {isOverlord && (
                           <div className="relative">
                             {confirmResetUser === user ? (
@@ -725,7 +697,6 @@ export default function AdminDesk({
                           </div>
                         )}
 
-                        {/* Deletion control (exclusively for OVERLORD) */}
                         {isOverlord && !isSelf && (
                           <div className="relative">
                             {confirmDeleteUser === user ? (
