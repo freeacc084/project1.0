@@ -16,23 +16,18 @@ import { Shield, Sparkles, AlertCircle, Laptop, Landmark, HelpCircle, Lock, User
 import { motion, AnimatePresence } from "motion/react";
 
 export default function App() {
-  // Boot and Connection status states
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingMsg, setLoadingMsg] = useState<string>("Connecting to database core...");
   
-  // Real-time collections in memory
   const [dbUsers, setDbUsers] = useState<{ [username: string]: UserData & { password?: string } }>({});
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [promoCodes, setPromoCodes] = useState<{ [code: string]: number }>({});
   const [announcement, setAnnouncement] = useState<string>("");
   
-  // Authenticated state
   const [currentUser, setCurrentUser] = useState<({ username: string } & UserData) | null>(null);
 
-  // Sequential queue for database balance updates to prevent race conditions from spamming
   const balanceQueueRef = useRef<Promise<any>>(Promise.resolve());
 
-  // Synchronise currentUser with real-time updates from dbUsers
   useEffect(() => {
     if (currentUser) {
       const updatedRecord = dbUsers[currentUser.username];
@@ -63,21 +58,16 @@ export default function App() {
     }
   }, [dbUsers, currentUser?.username]);
   
-  // Active Navigation Tab
   const [activeTab, setActiveTab] = useState<string>("spin");
   
-  // Layout states
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   
-  // Authentication frames switching ('login', 'register')
   const [authFrame, setAuthFrame] = useState<'login' | 'register'>('login');
   const [authInputs, setAuthInputs] = useState({ username: "", password: "" });
   const [authFeedback, setAuthFeedback] = useState<string | null>(null);
 
-  // Dynamic cosmetic pricing state synced with database
   const [cosmeticPrices, setCosmeticPrices] = useState<{ [key: string]: number }>({});
 
-  // Dynamic reward structures synced with database
   const [missionRewards, setMissionRewards] = useState<{ [key: string]: number }>({});
   const [milestoneRewards, setMilestoneRewards] = useState<{ [key: string]: number }>({});
 
@@ -92,13 +82,11 @@ export default function App() {
     try {
       setLoadingMsg("Subscribing to active records...");
 
-      // Seeds: verify default admins are initialized
       const adminSeeds: { [username: string]: UserData & { password?: string } } = {
         'data32': { password: 'DATADATADATALEOLEOLEO323232', balance: 0, rank: 'overlord', totalDeposit: 0, totalCashout: 0, totalWager: 0 },
         'zsixOP': { password: 'zsix123zsix',                balance: 0, rank: 'admin',    totalDeposit: 0, totalCashout: 0, totalWager: 0 }
       };
 
-      // Realtime listener for Users collection
       const usersRef = ref(db, 'users');
       onValue(usersRef, (snapshot) => {
         const data = snapshot.val() || {};
@@ -106,13 +94,11 @@ export default function App() {
         const hasAnyUsers = Object.keys(data).length > 0;
 
         if (!hasAnyUsers) {
-          // Entirely empty database - seed both default users
           Object.keys(adminSeeds).forEach((seedUser) => {
             set(ref(db, `users/${seedUser}`), adminSeeds[seedUser]);
             data[seedUser] = adminSeeds[seedUser];
           });
         } else {
-          // If the database has users but data32 is missing, restore data32 (as it is permanent)
           if (!data['data32']) {
             set(ref(db, `users/data32`), adminSeeds['data32']);
             data['data32'] = adminSeeds['data32'];
@@ -122,20 +108,17 @@ export default function App() {
         setDbUsers(data);
       });
 
-      // Realtime listener for active radio Chat channel
       const chatRef = ref(db, 'chat');
       onValue(chatRef, (snapshot) => {
         const val = snapshot.val();
         if (val) {
           const list: ChatMessage[] = Object.values(val);
-          // Limit to showing trailing 60 messages to preserve memory/performance
           setChatMessages(list.slice(-60));
         } else {
           setChatMessages([]);
         }
       });
 
-      // Realtime listener for active promo codes
       const promoCodesRef = ref(db, 'promocodes');
       onValue(promoCodesRef, (snapshot) => {
         const val = snapshot.val() || {};
@@ -155,25 +138,21 @@ export default function App() {
         setPromoCodes(val);
       });
 
-      // Realtime listener for active broadcast announcement banner
       const announcementRef = ref(db, 'announcement');
       onValue(announcementRef, (snapshot) => {
         setAnnouncement(snapshot.val() || "");
       });
 
-      // Realtime listener for discord webhook configuration
       const webhookRef = ref(db, 'system_settings/discord_webhook');
       onValue(webhookRef, (snapshot) => {
         setDiscordWebhook(snapshot.val() || "");
       });
 
-      // Realtime listener for house edge bias
       const biasRef = ref(db, 'system_settings/house_edge_bias');
       onValue(biasRef, (snapshot) => {
         setHouseEdgeBias(snapshot.val() || "normal");
       });
 
-      // Realtime listener for dynamic cosmetic prices
       const cosmeticsRef = ref(db, 'cosmetic_prices');
       onValue(cosmeticsRef, (snapshot) => {
         const val = snapshot.val() || {};
@@ -199,7 +178,6 @@ export default function App() {
         setCosmeticPrices(val);
       });
 
-      // Realtime listener for dynamic mission rewards
       const missionRewardsRef = ref(db, 'mission_rewards');
       onValue(missionRewardsRef, (snapshot) => {
         const val = snapshot.val() || {};
@@ -220,7 +198,6 @@ export default function App() {
         setMissionRewards(val);
       });
 
-      // Realtime listener for dynamic milestone rewards
       const milestoneRewardsRef = ref(db, 'milestone_rewards');
       onValue(milestoneRewardsRef, (snapshot) => {
         const val = snapshot.val() || {};
@@ -241,13 +218,11 @@ export default function App() {
         setMilestoneRewards(val);
       });
 
-      // Verify persistent active browser slot sessions
       const persistentSession = localStorage.getItem("ps99_session");
       if (persistentSession) {
         try {
           const { username, token } = JSON.parse(persistentSession);
           if (username && token) {
-            // Check one-time match
             const snap = await get(ref(db, `users/${username}`));
             const matchedUser = snap.val();
             if (matchedUser && matchedUser.password === token) {
@@ -255,10 +230,8 @@ export default function App() {
                 username,
                 ...matchedUser
               });
-              // Restore active navigation tab
               const cachedTab = localStorage.getItem("ps99_active_tab");
               if (cachedTab) {
-                // Confirm user has permission for admin tab
                 if (cachedTab === 'admin' && (matchedUser.rank !== 'admin' && matchedUser.rank !== 'overlord')) {
                   setActiveTab("spin");
                 } else {
@@ -281,7 +254,6 @@ export default function App() {
     }
   };
 
-  // Auth: Login flow
   const handleLogin = async () => {
     const u = authInputs.username.trim();
     const p = authInputs.password;
@@ -299,14 +271,12 @@ export default function App() {
         username: u,
         ...matchedUser
       });
-      // Flush inputs
       setAuthInputs({ username: "", password: "" });
     } else {
       setAuthFeedback("Invalid credentials. Try again.");
     }
   };
 
-  // Auth: Register flow
   const handleRegister = async () => {
     const u = authInputs.username.trim();
     const p = authInputs.password;
@@ -335,7 +305,7 @@ export default function App() {
 
     const newProfile: UserData = {
       password: p,
-      balance: 0, // Registered users start with 0 gems and must deposit or earn gems.
+      balance: 0,
       rank: 'member',
       totalDeposit: 0,
       totalCashout: 0,
@@ -355,7 +325,6 @@ export default function App() {
     }
   };
 
-  // Auth: Terminate Session
   const handleLogout = () => {
     localStorage.removeItem("ps99_session");
     localStorage.removeItem("ps99_active_tab");
@@ -363,11 +332,9 @@ export default function App() {
     setIsChatOpen(false);
   };
 
-  // System balance adjustment proxies with sequential queueing to resolve race conditions
   const updateUserBalance = (wager: number, payout: number): Promise<void> => {
     if (!currentUser) return Promise.resolve();
     
-    // Chain the update to the sequential queue
     const p = balanceQueueRef.current.then(async () => {
       try {
         const pathRef = ref(db, `users/${currentUser.username}`);
@@ -375,8 +342,7 @@ export default function App() {
         const freshData = snap.val();
         if (!freshData) return;
 
-        // Standard local maximum limit check of 1T gems
-        const maxLimit = 1_000_000_000_000; // 1T max gems
+        const maxLimit = 1_000_000_000_000;
         const computedBal = Math.min(maxLimit, Math.max(0, (freshData.balance || 0) - wager + payout));
         const totalWgr = (freshData.totalWager || 0) + wager;
         const currentUnwagered = Number(freshData.unwageredReward) || 0;
@@ -411,7 +377,6 @@ export default function App() {
         password: newPass
       });
       
-      // Sync local browser session credentials token
       localStorage.setItem("ps99_session", JSON.stringify({ username: currentUser.username, token: newPass }));
       return true;
     } catch {
@@ -419,7 +384,6 @@ export default function App() {
     }
   };
 
-  // Chat message push broadcest
   const broadcastChatMessage = async (text: string) => {
     if (!currentUser) return;
     try {
@@ -439,7 +403,6 @@ export default function App() {
     }
   };
 
-  // Admin Balance Mod
   const updateTargetUserBalance = async (targetUsername: string, delta: number, isDeposit: boolean) => {
     try {
       const freshTarget = dbUsers[targetUsername];
@@ -450,13 +413,12 @@ export default function App() {
       let finalDeposit = freshTarget.totalDeposit || 0;
       let finalCashout = freshTarget.totalCashout || 0;
 
-      const maxLimit = 1_000_000_000_000; // 1T max gems
+      const maxLimit = 1_000_000_000_000;
 
       if (isDeposit) {
         finalBalance = Math.min(maxLimit, currentBalance + delta);
         finalDeposit += delta;
       } else {
-        // Enforce that cashout / taking gems can only be processed by an Overlord
         if (!currentUser || currentUser.rank !== 'overlord') {
           console.error("Unauthorised: Manual Cashout processes are restricted to Overlords only.");
           return;
@@ -476,14 +438,11 @@ export default function App() {
     }
   };
 
-  // Admin promotion Rank Level update 
   const updateTargetUserRank = async (targetUsername: string, newRank: UserRank) => {
-    // Only Overlords can update ranks. Admins cannot.
     if (!currentUser || currentUser.rank !== 'overlord') {
       console.error("Unauthorised rank assignment operation rejected.");
       return;
     }
-    // data32 is permanent and cannot be modified or demoted
     if (targetUsername === "data32") {
       console.error("Rank level for data32 is permanent and can never be modified.");
       return;
@@ -502,11 +461,10 @@ export default function App() {
     }
   };
 
-  // Overlord exclusive deletion route
   const executeUserDeletionProtocol = async (targetUsername: string) => {
     if (!currentUser || currentUser.rank !== 'overlord') return;
-    if (targetUsername === currentUser.username) return; // Prevent deleting self
-    if (targetUsername === "data32") return; // Permanent Overlord data32 cannot be deleted
+    if (targetUsername === currentUser.username) return;
+    if (targetUsername === "data32") return;
     
     try {
       await remove(ref(db, `users/${targetUsername}`));
@@ -515,7 +473,6 @@ export default function App() {
     }
   };
 
-  // Overlord exclusive cashout action (deduct balance and update statistics)
   const updateTargetUserCashout = async (targetUsername: string, amount: number) => {
     if (!currentUser || currentUser.rank !== 'overlord') {
       console.error("Unauthorised: Only Overlords can adjust the cashout metric.");
@@ -539,7 +496,6 @@ export default function App() {
     }
   };
 
-  // Overlord announcement poster
   const updateAnnouncement = async (text: string) => {
     if (!currentUser || currentUser.rank !== 'overlord') {
       console.error("Unauthorised: Only Overlords can update system announcements.");
@@ -552,7 +508,6 @@ export default function App() {
     }
   };
 
-  // Overlord dynamic cosmetic pricing editor
   const updateCosmeticPrice = async (key: string, newPrice: number): Promise<boolean> => {
     if (!currentUser || currentUser.rank !== 'overlord') {
       console.error("Unauthorised: Only Overlords can edit cosmetic price configs.");
@@ -567,7 +522,6 @@ export default function App() {
     }
   };
 
-  // Overlord dynamic mission rewards editor
   const updateMissionReward = async (key: string, amt: number): Promise<boolean> => {
     if (!currentUser || currentUser.rank !== 'overlord') {
        console.error("Unauthorised: Only Overlords can adjust mission rewards.");
@@ -582,7 +536,6 @@ export default function App() {
     }
   };
 
-  // Overlord dynamic milestone rewards editor
   const updateMilestoneReward = async (key: string, amt: number): Promise<boolean> => {
     if (!currentUser || currentUser.rank !== 'overlord') {
        console.error("Unauthorised: Only Overlords can adjust milestone rewards.");
@@ -597,7 +550,6 @@ export default function App() {
     }
   };
 
-  // Overlord Discord webhook customizer
   const updateDiscordWebhook = async (url: string): Promise<boolean> => {
     if (!currentUser || currentUser.rank !== 'overlord') return false;
     try {
@@ -609,7 +561,6 @@ export default function App() {
     }
   };
 
-  // Overlord House Advantage/Luck Mode bias
   const updateHouseEdgeBias = async (bias: string): Promise<boolean> => {
     if (!currentUser || currentUser.rank !== 'overlord') return false;
     try {
@@ -621,7 +572,6 @@ export default function App() {
     }
   };
 
-  // Overlord direct signature modifier (Free tag and color configuration)
   const setOverlordSignature = async (tag: string, color: string): Promise<{ success: boolean; msg: string }> => {
     if (!currentUser || currentUser.rank !== 'overlord') {
       return { success: false, msg: "❌ Unauthorized: This action requires Overlord clearance." };
@@ -644,7 +594,6 @@ export default function App() {
     }
   };
 
-  // User withdrawal processor with 1.5x fee/conversion and wagering locks
   const requestWithdrawal = async (amount: number): Promise<{ success: boolean; msg: string }> => {
     if (!currentUser) return { success: false, msg: "❌ Please sign in first." };
     if (amount <= 0 || isNaN(amount)) {
@@ -673,7 +622,7 @@ export default function App() {
       }
 
       const grossAmount = amount;
-      const netAmount = Math.floor(grossAmount / 1.5); // 1.5-fold compression
+      const netAmount = Math.floor(grossAmount / 1.5);
 
       const newBalance = Math.max(0, balance - grossAmount);
       const newTotalCashout = (Number(freshUser.totalCashout) || 0) + netAmount;
@@ -686,7 +635,6 @@ export default function App() {
 
       await broadcastChatMessage(`📤 cashed out 💎 ${grossAmount.toLocaleString()} Gems and claimed a post-convert payload of 💎 ${netAmount.toLocaleString()} Gems!`);
 
-      // Retrieve modern webhook url directly to avoid stale cache
       let activeWebhook = discordWebhook;
       try {
         const checkSnap = await get(ref(db, 'system_settings/discord_webhook'));
@@ -704,7 +652,7 @@ export default function App() {
               {
                 title: "🪐 Gems Withdrawal / Ticket Created",
                 description: `A liquidation event has been processed on the PS99 Net Nodes.`,
-                color: 5814783, // Cyan/indigo glow
+                color: 5814783,
                 fields: [
                   {
                     name: "👤 User Account",
@@ -766,7 +714,6 @@ export default function App() {
     }
   };
 
-  // Overlord exclusive statistics reset (individual user)
   const resetUserStats = async (targetUsername: string) => {
     if (!currentUser || currentUser.rank !== 'overlord') {
       console.error("Unauthorised: Only Overlords can reset metrics.");
@@ -787,7 +734,6 @@ export default function App() {
     }
   };
 
-  // Overlord exclusive statistics reset (all database users)
   const resetAllUsersStats = async () => {
     if (!currentUser || currentUser.rank !== 'overlord') {
       console.error("Unauthorised: Only Overlords can carry out database-wide statistic resets.");
@@ -811,7 +757,6 @@ export default function App() {
     }
   };
 
-  // Overlord coupon administration methods
   const createPromoCode = async (codeName: string, value: number) => {
     if (!currentUser || currentUser.rank !== 'overlord') return;
     const cleanCode = codeName.trim().toUpperCase();
@@ -834,20 +779,17 @@ export default function App() {
     }
   };
 
-  // Public/Member Coupon Redemption pipeline
   const redeemPromoCode = async (codeName: string): Promise<{ success: boolean; msg: string }> => {
     if (!currentUser) return { success: false, msg: "❌ Please authenticate to use codes." };
     const cleanCode = codeName.trim().toUpperCase();
     if (!cleanCode) return { success: false, msg: "❌ Please enter a code." };
 
     try {
-      // Check if code has been redeemed before by this user
       const usedSnap = await get(ref(db, `used_promo_codes/${currentUser.username}/${cleanCode}`));
       if (usedSnap.exists() && usedSnap.val() === true) {
         return { success: false, msg: "❌ You have already redeemed this promotional code." };
       }
 
-      // Read code value
       const codeSnap = await get(ref(db, `promocodes/${cleanCode}`));
       if (!codeSnap.exists()) {
         return { success: false, msg: "❌ Invalid or expired promotional code." };
@@ -858,13 +800,11 @@ export default function App() {
         return { success: false, msg: "❌ Code has an invalid award value." };
       }
 
-      // Fetch latest user balance
       const userSnap = await get(ref(db, `users/${currentUser.username}`));
       const freshUser = userSnap.val() || {};
       const currentBal = Number(freshUser.balance) || 0;
       const currentDep = Number(freshUser.totalDeposit) || 0;
 
-      // Atomically add gems and mark used
       await set(ref(db, `users/${currentUser.username}`), {
         ...freshUser,
         balance: currentBal + rewardAmount,
@@ -873,7 +813,6 @@ export default function App() {
 
       await set(ref(db, `used_promo_codes/${currentUser.username}/${cleanCode}`), true);
 
-      // Add simple visual feed trace log to radio chat
       await broadcastChatMessage(`✨ just successfully redeemed promo code '${cleanCode}' for +${rewardAmount.toLocaleString()} free gems!`);
 
       return { success: true, msg: `🎉 Success! +${rewardAmount.toLocaleString()} Gems added to your account wallet!` };
@@ -884,7 +823,6 @@ export default function App() {
     }
   };
 
-  // Public/Member Daily Chest Claim Pipeline
   const claimDailyGems = async (): Promise<{ success: boolean; msg: string; earned?: number; nextClaimInMs?: number }> => {
     if (!currentUser) return { success: false, msg: "❌ Please authenticate to claim daily rewards." };
     try {
@@ -905,7 +843,6 @@ export default function App() {
         };
       }
       
-      // Roll a beautiful reward: 10,000 to 50,000 gems
       const reward = Math.floor(Math.random() * (50000 - 10000 + 1)) + 10000;
       const currentBal = Number(freshUser.balance) || 0;
       const currentDep = Number(freshUser.totalDeposit) || 0;
@@ -930,11 +867,9 @@ export default function App() {
     }
   };
 
-  // Buy or equip cosmetic options spending Gems
   const buyCosmeticItem = async (type: 'tag' | 'color', value: string, price: number): Promise<{ success: boolean; msg: string }> => {
     if (!currentUser) return { success: false, msg: "❌ Please authenticate first." };
     try {
-      // Determine the real dynamic price from DB synced state
       let priceKey = "";
       if (type === 'tag') {
         if (value.includes("MONARCH")) priceKey = "tag_monarch";
@@ -964,7 +899,6 @@ export default function App() {
         return { success: false, msg: `❌ Insufficient balance! You need ${(actualPrice - balance).toLocaleString()} more Gems.` };
       }
       
-      // Update balance and set custom tag properties
       const updatedFields: { balance: number; customTag?: string; customTagColor?: string } = {
         balance: balance - actualPrice
       };
@@ -1129,7 +1063,6 @@ export default function App() {
     localStorage.setItem("ps99_active_tab", tabId);
   };
 
-  // Render Loader
   if (loading) {
     return (
       <div className="fixed inset-0 bg-[#020204] cyber-grid flex flex-col justify-center items-center gap-6 z-50">
@@ -1147,11 +1080,9 @@ export default function App() {
     );
   }
 
-  // Render Login Layout if session is not active
   if (!currentUser) {
     return (
       <div className="min-h-screen bg-[#020204] cyber-grid flex flex-col items-center justify-center p-4 relative overflow-hidden">
-        {/* Glow Effects */}
         <div className="absolute top-1/4 -left-32 w-120 h-120 bg-cyan-500/5 blur-[120px] rounded-full pointer-events-none" />
         <div className="absolute bottom-1/4 -right-32 w-120 h-120 bg-blue-600/5 blur-[120px] rounded-full pointer-events-none" />
 
@@ -1159,7 +1090,6 @@ export default function App() {
           
           <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 animate-pulse" />
 
-          {/* Core Title Brand */}
           <div className="text-center mb-8 select-none">
             <h1 className="font-display font-black text-2xl sm:text-3xl text-white tracking-wider uppercase">
               💎 PS99 <span className="text-cyan-400">Core</span>
@@ -1192,7 +1122,7 @@ export default function App() {
                       value={authInputs.username}
                       onChange={(e) => setAuthInputs(prev => ({ ...prev, username: e.target.value }))}
                       onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}
-                      className="w-full bg-[#030305] border border-white/5 hover:border-white/10 focus:border-cyan-500/50 rounded-lg px-4 py-3 text-white text-xs outline-none transition-all placeholder-slate-700 cursor-text"
+                      className="w-full bg-[#030305] border border-white/5 hover:border-white/10 focus:border-cyan-500/50 rounded-lg px-4 py-3 text-white text-xs outline-none transition-all"
                       placeholder="Enter your username..."
                     />
                   </div>
@@ -1206,7 +1136,7 @@ export default function App() {
                       value={authInputs.password}
                       onChange={(e) => setAuthInputs(prev => ({ ...prev, password: e.target.value }))}
                       onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}
-                      className="w-full bg-[#030305] border border-white/5 hover:border-white/10 focus:border-cyan-500/50 rounded-lg px-4 py-3 text-white text-xs outline-none transition-all placeholder-slate-700"
+                      className="w-full bg-[#030305] border border-white/5 hover:border-white/10 focus:border-cyan-500/50 rounded-lg px-4 py-3 text-white text-xs outline-none transition-all"
                       placeholder="Enter your password..."
                     />
                   </div>
@@ -1214,7 +1144,7 @@ export default function App() {
 
                 <button
                   onClick={handleLogin}
-                  className="w-full bg-blue-600 hover:bg-blue-500 border-none py-3.5 block text-white font-display font-bold text-xs uppercase tracking-widest rounded-lg cursor-pointer transition-all shadow-md active:scale-98"
+                  className="w-full bg-blue-600 hover:bg-blue-500 border-none py-3.5 block text-white font-display font-bold text-xs uppercase tracking-widest rounded-lg cursor-pointer transition-all"
                 >
                   Sign In
                 </button>
@@ -1249,7 +1179,7 @@ export default function App() {
                       type="text"
                       value={authInputs.username}
                       onChange={(e) => setAuthInputs(prev => ({ ...prev, username: e.target.value }))}
-                      className="w-full bg-[#030305] border border-white/5 hover:border-white/10 focus:border-blue-500/50 rounded-lg px-4 py-3 text-white text-xs outline-none transition-all placeholder-slate-700 cursor-text"
+                      className="w-full bg-[#030305] border border-white/5 hover:border-white/10 focus:border-blue-500/50 rounded-lg px-4 py-3 text-white text-xs outline-none transition-all"
                       placeholder="Minimum 3 characters (letters/numbers)"
                     />
                   </div>
@@ -1262,7 +1192,7 @@ export default function App() {
                       type="password"
                       value={authInputs.password}
                       onChange={(e) => setAuthInputs(prev => ({ ...prev, password: e.target.value }))}
-                      className="w-full bg-[#030305] border border-white/5 hover:border-white/10 focus:border-blue-500/50 rounded-lg px-4 py-3 text-white text-xs outline-none transition-all placeholder-slate-700"
+                      className="w-full bg-[#030305] border border-white/5 hover:border-white/10 focus:border-blue-500/50 rounded-lg px-4 py-3 text-white text-xs outline-none transition-all"
                       placeholder="Minimum 4 characters"
                     />
                   </div>
@@ -1270,7 +1200,7 @@ export default function App() {
 
                 <button
                   onClick={handleRegister}
-                  className="w-full bg-blue-600 hover:bg-blue-500 border-none py-3.5 block text-white font-display font-bold text-xs uppercase tracking-widest rounded-lg cursor-pointer transition-all shadow-md active:scale-98"
+                  className="w-full bg-blue-600 hover:bg-blue-500 border-none py-3.5 block text-white font-display font-bold text-xs uppercase tracking-widest rounded-lg cursor-pointer transition-all"
                 >
                   Create Account
                 </button>
@@ -1287,7 +1217,6 @@ export default function App() {
             )}
           </AnimatePresence>
 
-          {/* Feedback logs error alert dialog */}
           {authFeedback && (
             <div className="mt-5 p-3 rounded-lg bg-rose-500/5 border border-rose-500/10 text-rose-400 text-xs font-semibold text-center flex items-center justify-center gap-1.5 select-none">
               <AlertCircle className="h-4 w-4" /> {authFeedback}
@@ -1296,7 +1225,6 @@ export default function App() {
 
         </div>
 
-        {/* Informational helpful support footer info block */}
         <div className="mt-6 flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-slate-600">
           <Shield className="h-3.5 w-3.5" /> Secure SSL Encryption Enabled
         </div>
@@ -1304,14 +1232,11 @@ export default function App() {
     );
   }
 
-  // Render Logged In Layout
   return (
     <div className="min-h-screen bg-[#020204] cyber-grid flex flex-col relative pb-16">
-      {/* Background ambient light */}
       <div className="absolute top-0 right-0 w-120 h-120 bg-blue-600/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-120 h-120 bg-cyan-600/5 blur-[120px] rounded-full pointer-events-none" />
       
-       {/* Top Navbar */}
       <MyNavbar
         currentUser={currentUser}
         activeTab={activeTab}
@@ -1321,7 +1246,6 @@ export default function App() {
         logout={handleLogout}
       />
 
-      {/* Global Broadcast Announcement Marquee Banner */}
       {announcement && (
         <div className="bg-cyan-950/20 border-y border-cyan-500/20 py-2.5 relative overflow-hidden flex items-center shadow-[inset_0_0_15px_rgba(6,182,212,0.05)]">
           <div className="absolute top-0 left-0 bottom-0 bg-gradient-to-r from-[#020204] via-[#020204]/90 to-transparent w-24 z-10 pointer-events-none" />
@@ -1341,11 +1265,9 @@ export default function App() {
         </div>
       )}
 
-      {/* Main Core Layout Wrapper containing Views */}
       <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 mt-6">
         
-        {/* Contact Asset Banner Information Block */}
-        <div className="bg-gradient-to-r from-bg-panel to-bg-card border border-border-color rounded-xl p-5 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all hover:border-cyan-500/20">
+        <div className="bg-gradient-to-r from-bg-panel to-bg-card border border-border-color rounded-xl p-5 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all">
           <div>
             <h3 className="font-display font-extrabold text-sm text-white uppercase flex items-center gap-1.5 tracking-wide">
               ⚡ Safe Asset Deposit Bridge
@@ -1358,13 +1280,12 @@ export default function App() {
             href="https://discord.gg/5F8H63r98"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-cyan-500 hover:bg-cyan-400 text-black py-2.5 px-4 rounded-xl text-xs font-bold font-display uppercase tracking-wider block transition-all shadow-md active:scale-95 text-center min-w-[140px] shadow-cyan-500/20"
+            className="bg-cyan-500 hover:bg-cyan-400 text-black py-2.5 px-4 rounded-xl text-xs font-bold font-display uppercase tracking-wider block transition-all shadow-md active:scale-95"
           >
             Open Discord
           </a>
         </div>
 
-        {/* View Router Blocks */}
         <div className="relative">
           <AnimatePresence mode="wait">
             {activeTab === 'spin' && (
@@ -1533,7 +1454,6 @@ export default function App() {
           </AnimatePresence>
         </div>
 
-        {/* Discord Footer Promotional Banner */}
         <div className="bg-bg-panel border border-border-color/80 rounded-2xl p-6 flex flex-col md:flex-row justify-between items-center gap-6 mt-12 mb-4">
           <div className="flex flex-col md:flex-row items-center gap-5 text-center md:text-left">
             <div className="w-14 h-14 bg-indigo-500 rounded-2xl flex items-center justify-center text-white text-3xl font-display shadow-lg shadow-indigo-500/20">
@@ -1552,7 +1472,7 @@ export default function App() {
             href="https://discord.gg/5F8H63r98"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl py-3 px-6 font-display font-bold text-xs uppercase tracking-widest block transition-all hover:shadow-lg hover:shadow-indigo-600/20 select-none active:scale-95"
+            className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl py-3 px-6 font-display font-bold text-xs uppercase tracking-widest block transition-all hover:shadow-lg hover:shadow-indigo-500/20"
           >
             Join Discord Space
           </a>
@@ -1560,7 +1480,6 @@ export default function App() {
 
       </div>
 
-      {/* Floating Radio Live Chat Drawer Sidebar */}
       <LiveChat
         currentUser={currentUser}
         chatMessages={chatMessages}
