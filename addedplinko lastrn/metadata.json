@@ -1,0 +1,8 @@
+{
+  "name": "Remix: PS99 Premium Gaming Network",
+  "description": "Premium companion portal for PS99. Play interactive mini-games (Spin Wheel, Towers, Mines), chat live with the community, and manage user accounts with administrative tools.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

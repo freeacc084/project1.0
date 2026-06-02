@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Chakra Petch", sans-serif;
+  
+  --color-bg-darker: #020204;
+  --color-bg-main: #060609;
+  --color-bg-panel: rgba(8, 8, 12, 0.85);
+  --color-bg-card: rgba(13, 15, 24, 0.65);
+  --color-bg-input: #030305;
+  --color-border-color: rgba(255, 255, 255, 0.06);
+  --color-primary: #2563eb;
+  --color-accent-cyan: #06b6d4;
+  --color-accent-gold: #eab308;
+}
+
+/* Cyber ambient animations and immersive visual overlays */
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.1); }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #020204;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2563eb;
+}
+
+body {
+  background-color: #020204;
+  color: #f3f4f6;
+  font-family: var(--font-sans);
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 85% 75%, rgba(37, 99, 235, 0.04) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.cyber-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+}
+
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animation-marquee {
+  display: inline-block;
+  animation: marquee 25s linear infinite;
+  will-change: transform;
+}
+
+.animation-marquee:hover {
+  animation-play-state: paused;
+}
+
