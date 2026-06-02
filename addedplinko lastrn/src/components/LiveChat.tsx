@@ -14,7 +14,6 @@ export default function LiveChat({ currentUser, chatMessages, broadcastMessage, 
   const [chatText, setChatText] = useState<string>("");
   const wallEndRef = useRef<HTMLDivElement | null>(null);
 
-  // Auto scroll to latest chat messages
   useEffect(() => {
     if (wallEndRef.current) {
       wallEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -33,11 +32,11 @@ export default function LiveChat({ currentUser, chatMessages, broadcastMessage, 
   const getRankColor = (rank: UserRank) => {
     switch (rank) {
       case 'overlord':
-        return '#8b5cf6'; // Violet
+        return '#8b5cf6';
       case 'admin':
-        return '#06b6d4'; // Cyan
+        return '#06b6d4';
       default:
-        return '#cbd5e1'; // Light gray
+        return '#cbd5e1';
     }
   };
 
@@ -47,7 +46,6 @@ export default function LiveChat({ currentUser, chatMessages, broadcastMessage, 
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}
     >
-      {/* Drawer Header */}
       <div className="p-4 border-b border-border-color flex justify-between items-center bg-bg-darker/40">
         <h4 className="font-display font-medium text-xs tracking-wider uppercase text-white flex items-center gap-1.5">
           <MessageSquare className="h-4 w-4 text-cyan-400" /> Operational Net Chat
@@ -58,7 +56,6 @@ export default function LiveChat({ currentUser, chatMessages, broadcastMessage, 
         </div>
       </div>
 
-      {/* Messages Column */}
       <div className="flex-1 p-4 overflow-y-auto space-y-3.5 custom-scrollbar bg-bg-panel/40">
         {chatMessages && chatMessages.length > 0 ? (
           chatMessages.map((msg, idx) => {
@@ -114,7 +111,6 @@ export default function LiveChat({ currentUser, chatMessages, broadcastMessage, 
         <div ref={wallEndRef} />
       </div>
 
-      {/* Input controls footer */}
       <div className="p-4 border-t border-border-color bg-bg-darker/60 flex items-center gap-2">
         <input
           type="text"
