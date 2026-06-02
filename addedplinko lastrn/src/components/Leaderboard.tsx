@@ -21,10 +21,8 @@ export default function Leaderboard({ dbUsers, currentUser }: LeaderboardProps) 
     customTagColor: data.customTagColor || ''
   }));
 
-  // Sort by active selected filter
   const sortedUsers = [...usersArray].sort((a, b) => b[filterType] - a[filterType]).slice(0, 50);
 
-  // Stats summaries
   const totalBalanceInPlay = usersArray.reduce((sum, u) => sum + u.balance, 0);
   const totalWageredAllTime = usersArray.reduce((sum, u) => sum + u.totalWager, 0);
   const totalCashoutAllTime = usersArray.reduce((sum, u) => sum + u.totalCashout, 0);
@@ -55,9 +53,7 @@ export default function Leaderboard({ dbUsers, currentUser }: LeaderboardProps) 
 
   return (
     <div className="space-y-6">
-      {/* Top statistics banners */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Metric Card 1 */}
         <div className="bg-[#0b0c14] border border-border-color rounded-xl p-5 relative overflow-hidden group hover:border-cyan-500/40 transition-all">
           <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-cyan-500/5 blur-xl rounded-full" />
           <h5 className="text-[10px] text-slate-500 uppercase font-black tracking-widest mb-1.5 flex items-center gap-1.5">
@@ -69,7 +65,6 @@ export default function Leaderboard({ dbUsers, currentUser }: LeaderboardProps) 
           <p className="text-[9px] text-slate-400 uppercase mt-1">Total Gem liquid liquidity index</p>
         </div>
 
-        {/* Metric Card 2 */}
         <div className="bg-[#0b0c14] border border-border-color rounded-xl p-5 relative overflow-hidden group hover:border-purple-500/40 transition-all">
           <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-purple-500/5 blur-xl rounded-full" />
           <h5 className="text-[10px] text-slate-500 uppercase font-black tracking-widest mb-1.5 flex items-center gap-1.5">
@@ -81,7 +76,6 @@ export default function Leaderboard({ dbUsers, currentUser }: LeaderboardProps) 
           <p className="text-[9px] text-slate-400 uppercase mt-1">Accumulated high stakes wagers index</p>
         </div>
 
-        {/* Metric Card 3 */}
         <div className="bg-[#0b0c14] border border-border-color rounded-xl p-5 relative overflow-hidden group hover:border-rose-500/40 transition-all">
           <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-rose-500/5 blur-xl rounded-full" />
           <h5 className="text-[10px] text-slate-500 uppercase font-black tracking-widest mb-1.5 flex items-center gap-1.5">
@@ -94,9 +88,7 @@ export default function Leaderboard({ dbUsers, currentUser }: LeaderboardProps) 
         </div>
       </div>
 
-      {/* Main High Roller Standings panel */}
       <div className="bg-bg-panel border border-border-color rounded-xl p-6 shadow-xl relative overflow-hidden">
-        {/* Ambient top right neon glare */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/5 blur-[100px] rounded-full pointer-events-none" />
 
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border-color/60 pb-5 mb-5 relative z-10">
@@ -109,7 +101,6 @@ export default function Leaderboard({ dbUsers, currentUser }: LeaderboardProps) 
             </p>
           </div>
 
-          {/* Filtering buttons */}
           <div className="flex bg-bg-input border border-border-color/60 p-1 rounded-xl gap-1 w-full md:w-auto">
             {[
               { id: 'balance', label: 'Wealth', icon: <Gem className="h-3 w-3" /> },
@@ -133,7 +124,6 @@ export default function Leaderboard({ dbUsers, currentUser }: LeaderboardProps) 
           </div>
         </div>
 
-        {/* Scoring list table */}
         <div className="overflow-x-auto relative z-10">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -164,19 +154,15 @@ export default function Leaderboard({ dbUsers, currentUser }: LeaderboardProps) 
                         : 'hover:bg-white/[0.01] text-slate-300'
                     }`}
                   >
-                    {/* Rank Index Placement */}
                     <td className="py-3.5 pl-3 font-display">
                       {getLeaderboardIcon(idx)}
                     </td>
-
-                    {/* Username & Premium badge */}
                     <td className="py-3.5 font-display">
                       <div className="flex items-center gap-2">
                         <span className={isMe ? "text-white font-bold" : "text-slate-200 font-medium"}>
                           {user.username}
                         </span>
                         
-                        {/* Custom shop active decor badge */}
                         {user.customTag && (
                           <span 
                             className="text-[8px] px-1.5 py-0.5 rounded font-black border uppercase tracking-wider select-none shrink-0"
@@ -198,7 +184,6 @@ export default function Leaderboard({ dbUsers, currentUser }: LeaderboardProps) 
                       </div>
                     </td>
 
-                    {/* Platform Role Level */}
                     <td className="py-3.5">
                       <span className={`text-[8.5px] font-display font-black tracking-widest uppercase px-2 py-0.5 border rounded-full inline-flex items-center gap-1 ${rDetails.color}`}>
                         <Shield className="h-2.5 w-2.5 inline-block" />
@@ -206,7 +191,6 @@ export default function Leaderboard({ dbUsers, currentUser }: LeaderboardProps) 
                       </span>
                     </td>
 
-                    {/* Filter Score */}
                     <td className="py-3.5 text-right font-mono font-bold pr-3 text-cyan-400">
                       💎 {scoreVal.toLocaleString()}
                     </td>
